@@ -2,15 +2,12 @@ package com.technicalscreen.roleslider.adapter;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.technicalscreen.roleslider.R;
@@ -40,17 +37,16 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         }
     }
 
+    //Constructor of adapter with parameters
     public ImageAdapter(Context context, List<Images> allImages, int displayWidth){
         mContext = context;
         mImages = allImages;
         viewWidth = displayWidth;
-//        DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
-//        viewWidth = metrics.widthPixels;
-//        Toast.makeText(mContext, viewWidth,Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        //Setting the layout as custom view layout
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.custom_view, parent, false);
 
@@ -59,8 +55,10 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+        //Getting the object of Image class at specified position
         Images imageAtPosition = mImages.get(position);
 
+        //Setting the image view with the url from the Images object using Picasso library
         Picasso.with(mContext)
                 .load(Uri.parse(imageAtPosition.getImageUrl()))
                 .resize(viewWidth,viewWidth)
@@ -68,13 +66,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                 .noFade()
                 .into(holder.imageView);
 
+        //Setting the textview with the caption from Images object
         holder.textView.setText(imageAtPosition.getImageFormat());
     }
 
     @Override
     public int getItemCount() {
+        //Return the size of the list of images
         return mImages.size();
     }
-
 
 }

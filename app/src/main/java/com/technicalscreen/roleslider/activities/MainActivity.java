@@ -7,6 +7,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.technicalscreen.roleslider.R;
@@ -16,6 +18,7 @@ import com.technicalscreen.roleslider.model.PhotoResponse;
 import com.technicalscreen.roleslider.model.Photos;
 import com.technicalscreen.roleslider.rest.ApiClient;
 import com.technicalscreen.roleslider.rest.ApiInterface;
+import com.technicalscreen.roleslider.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,51 +30,76 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
+    ProgressBar progressBar;
     ImageAdapter adapter;
     List<Images> dataImages = new ArrayList<>();
     Images image;
-   // public static final String API_KEY = MainActivity.this.getString(R.string.CONSUMER_KEY);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Mapping the view items
         recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
+        progressBar = (ProgressBar)findViewById(R.id.progress_bar);
+
+        //Setting the layout manager and item animator for recycler view
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(),2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
+        //Getting the width of screen for equal spacing
         DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
-        Toast.makeText(getApplicationContext(),metrics.widthPixels+"",Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getApplicationContext(),metrics.widthPixels+"",Toast.LENGTH_SHORT).show();
+
+        //Initializing the adapter
         adapter = new ImageAdapter(getApplicationContext(),dataImages, (metrics.widthPixels)/2);
 
+        //Setting the adapter to recycler view
         recyclerView.setAdapter(adapter);
 
+        //Creating the Api client using Api Interface
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
 
-        Call<PhotoResponse> call = apiService.fetchPhotos("popular","Nude,People","1600",getString(R.string.CONSUMER_KEY));
-        call.enqueue(new Callback<PhotoResponse>() {
-            @Override
-            public void onResponse(Call<PhotoResponse> call, Response<PhotoResponse> response) {
-                PhotoResponse resp = response.body();
-                List<Photos> photos = resp.getPhotos();
-                for(int j = 0; j < photos.size(); j++){
-                    for(int i = 0;i < photos.get(j).getImages().size(); i++){
-                        image = photos.get(j).getImages().get(i);
-                        dataImages.add(image);
-                        adapter.notifyDataSetChanged();
+        try{
+            //Calling the method in Api Interface to pass the query parameters
+            Call<PhotoResponse> call = apiService.fetchPhotos("popular",
+                                                                "Nude,People",
+                                                                Constants.IMAGE_SIZE_1600,
+                                                                getString(R.string.CONSUMER_KEY));
+            call.enqueue(new Callback<PhotoResponse>() {
+                @Override
+                public void onResponse(Call<PhotoResponse> call, Response<PhotoResponse> response) {
+                    PhotoResponse resp = response.body();
+                    List<Photos> photos = resp.getPhotos();
+                    for(int j = 0; j < photos.size(); j++){
+                        for(int i = 0;i < photos.get(j).getImages().size(); i++){
+                            //Getting the images at specified position
+                            image = photos.get(j).getImages().get(i);
+
+                            //Adding the images to the list
+                            dataImages.add(image);
+
+                            //Notifying the data set change to the adapter
+                            adapter.notifyDataSetChanged();
+
+                            //Setting the visibilities of elements
+                            progressBar.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
 
-                //Toast.makeText(getApplicationContext(),"Got it"+photos.size(),Toast.LENGTH_SHORT).show();
+                @Override
+                public void onFailure(Call<PhotoResponse> call, Throwable t) {
+                    Log.e("Hello folks","Task failed");
+                }
+            });
 
-            }
-
-            @Override
-            public void onFailure(Call<PhotoResponse> call, Throwable t) {
-                Log.e("Hello folks","Task failed");
-            }
-        });
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(),"Oops! Something went wrong",Toast.LENGTH_SHORT).show();
+        }
 
     }
 }

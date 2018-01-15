@@ -16,16 +16,18 @@ public class Photos {
     @SerializedName("images")
     private List<Images> images;
 
+    //Getters
     public int getPhotoId() {
         return photoId;
     }
 
-    public void setPhotoId(int photoId) {
-        this.photoId = photoId;
-    }
-
     public List<Images> getImages() {
         return images;
+    }
+
+    //Setters
+    public void setPhotoId(int photoId) {
+        this.photoId = photoId;
     }
 
     public void setImages(List<Images> images) {

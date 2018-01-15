@@ -17,34 +17,38 @@ public class Images {
     @SerializedName("format")
     private String imageFormat;
 
+    //Constructor
     public Images(){
 
     }
 
+    //Constructor with paramters
     public Images(int mInageSize, String mImageUrl, String mImageFormat){
         this.imageSize = mInageSize;
         this.imageUrl = mImageUrl;
         this.imageFormat = mImageFormat;
     }
 
+    //Getters
     public int getImageSize() {
         return imageSize;
-    }
-
-    public void setImageSize(int imageSize) {
-        this.imageSize = imageSize;
     }
 
     public String getImageUrl() {
         return imageUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
     public String getImageFormat() {
         return imageFormat;
+    }
+
+    //Setters
+    public void setImageSize(int imageSize) {
+        this.imageSize = imageSize;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public void setImageFormat(String imageFormat) {
