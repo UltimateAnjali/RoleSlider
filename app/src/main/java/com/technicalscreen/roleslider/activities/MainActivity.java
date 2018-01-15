@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     ImageAdapter adapter;
     List<Images> dataImages = new ArrayList<>();
     Images image;
+    int START_PAGE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         progressBar = (ProgressBar)findViewById(R.id.progress_bar);
 
         //Setting the layout manager and item animator for recycler view
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(),2);
+        final RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(),2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -59,15 +60,37 @@ public class MainActivity extends AppCompatActivity {
         //Setting the adapter to recycler view
         recyclerView.setAdapter(adapter);
 
+        //Calling the method to get the data
+        GetData(START_PAGE);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int visibleItemCount = mLayoutManager.getChildCount();
+                int totalItemCount = mLayoutManager.getItemCount();
+//                int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
+//                Toast.makeText(getApplicationContext(),visibleItemCount+"->"+totalItemCount,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void GetData(int page){
         //Creating the Api client using Api Interface
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
 
         try{
             //Calling the method in Api Interface to pass the query parameters
             Call<PhotoResponse> call = apiService.fetchPhotos("popular",
-                                                                "Nude,People",
-                                                                Constants.IMAGE_SIZE_1600,
-                                                                getString(R.string.CONSUMER_KEY));
+                    "Nude,People",
+                    Constants.IMAGE_SIZE_1600,
+                    page,
+                    getString(R.string.CONSUMER_KEY));
             call.enqueue(new Callback<PhotoResponse>() {
                 @Override
                 public void onResponse(Call<PhotoResponse> call, Response<PhotoResponse> response) {
@@ -87,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
                             //Setting the visibilities of elements
                             progressBar.setVisibility(View.GONE);
                             recyclerView.setVisibility(View.VISIBLE);
+
+
                         }
                     }
                 }
@@ -100,6 +125,5 @@ public class MainActivity extends AppCompatActivity {
         }catch (Exception e){
             Toast.makeText(getApplicationContext(),"Oops! Something went wrong",Toast.LENGTH_SHORT).show();
         }
-
     }
 }

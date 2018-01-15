@@ -17,5 +17,6 @@ public interface ApiInterface {
     Call<PhotoResponse> fetchPhotos(@Query(Constants.FEATURE) String feature,
                                     @Query(Constants.EXCLUDE_PHOTOS) String exclude,
                                     @Query(Constants.IMAGE_SIZE) String imagesize,
+                                    @Query(Constants.PAGE) int page,
                                     @Query(Constants.CONSUMER_KEY_SECTION) String consumer_key);
 }
