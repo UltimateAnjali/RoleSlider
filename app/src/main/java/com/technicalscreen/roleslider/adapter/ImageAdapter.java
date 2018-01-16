@@ -23,7 +23,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
 
     private Context mContext;
     private List<Images> mImages;
+
     private int viewWidth;
+
+    //Constructor of adapter with parameters
+    public ImageAdapter(Context context, List<Images> allImages, int displayWidth){
+        mContext = context;
+        mImages = allImages;
+        viewWidth = displayWidth;
+    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
@@ -37,24 +45,19 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
         }
     }
 
-    //Constructor of adapter with parameters
-    public ImageAdapter(Context context, List<Images> allImages, int displayWidth){
-        mContext = context;
-        mImages = allImages;
-        viewWidth = displayWidth;
-    }
-
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        //Setting the layout as custom view layout
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.custom_view, parent, false);
+
+        View itemView = null;
+        itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.custom_view, parent, false);
 
         return new MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+
         //Getting the object of Image class at specified position
         Images imageAtPosition = mImages.get(position);
 
@@ -67,13 +70,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.MyViewHolder
                 .into(holder.imageView);
 
         //Setting the textview with the caption from Images object
-        holder.textView.setText(imageAtPosition.getImageFormat());
+        holder.textView.setText(imageAtPosition.getName());
+
     }
 
     @Override
     public int getItemCount() {
         //Return the size of the list of images
-        return mImages == null ? 0 : mImages.size();
+        return mImages.size();
     }
 
 }

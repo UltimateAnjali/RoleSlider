@@ -3,7 +3,7 @@ package com.technicalscreen.roleslider.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by anjali desai on 12-01-2018.
+ * Created by anjali desai on 15-01-2018.
  */
 
 public class Images {
@@ -17,16 +17,19 @@ public class Images {
     @SerializedName("format")
     private String imageFormat;
 
+    String name;
+
     //Constructor
     public Images(){
 
     }
 
     //Constructor with paramters
-    public Images(int mInageSize, String mImageUrl, String mImageFormat){
+    public Images(int mInageSize, String mImageUrl, String mImageFormat, String name){
         this.imageSize = mInageSize;
         this.imageUrl = mImageUrl;
         this.imageFormat = mImageFormat;
+        this.name = name;
     }
 
     //Getters
@@ -42,6 +45,10 @@ public class Images {
         return imageFormat;
     }
 
+    public String getName(){
+        return name;
+    }
+
     //Setters
     public void setImageSize(int imageSize) {
         this.imageSize = imageSize;
@@ -54,4 +61,6 @@ public class Images {
     public void setImageFormat(String imageFormat) {
         this.imageFormat = imageFormat;
     }
+
+    public void setName(String name){this.name = name;}
 }

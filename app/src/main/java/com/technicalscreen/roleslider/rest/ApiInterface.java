@@ -13,6 +13,7 @@ import retrofit2.http.Query;
 
 public interface ApiInterface {
 
+    //End point GET method with parameters for Retrofit Api
     @GET("photos")
     Call<PhotoResponse> fetchPhotos(@Query(Constants.FEATURE) String feature,
                                     @Query(Constants.EXCLUDE_PHOTOS) String exclude,

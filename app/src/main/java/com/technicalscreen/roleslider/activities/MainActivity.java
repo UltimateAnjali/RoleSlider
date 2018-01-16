@@ -34,7 +34,17 @@ public class MainActivity extends AppCompatActivity {
     ImageAdapter adapter;
     List<Images> dataImages = new ArrayList<>();
     Images image;
-    int START_PAGE = 0;
+
+    private static final int PAGE_START = 0;
+    private boolean loadingFlag = false;
+//    private boolean permanentFlag = true;
+    private int TOTAL_PAGES = Constants.OFF_SCREEN_PAGE_LIMIT;
+    private int currentPage = 0;
+    int lastItem;
+
+    List<Photos> photosList = new ArrayList<>();
+    PhotoResponse photoResponse;
+    int i=0,j=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +56,13 @@ public class MainActivity extends AppCompatActivity {
         progressBar = (ProgressBar)findViewById(R.id.progress_bar);
 
         //Setting the layout manager and item animator for recycler view
-        final RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(),2);
+        final GridLayoutManager manager = new GridLayoutManager(getApplicationContext(),2);
+        final RecyclerView.LayoutManager mLayoutManager = manager;
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         //Getting the width of screen for equal spacing
         DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
-//        Toast.makeText(getApplicationContext(),metrics.widthPixels+"",Toast.LENGTH_SHORT).show();
 
         //Initializing the adapter
         adapter = new ImageAdapter(getApplicationContext(),dataImages, (metrics.widthPixels)/2);
@@ -60,8 +70,8 @@ public class MainActivity extends AppCompatActivity {
         //Setting the adapter to recycler view
         recyclerView.setAdapter(adapter);
 
-        //Calling the method to get the data
-        GetData(START_PAGE);
+        //Calling the method to get the response
+        GetData();
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -72,48 +82,57 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                int visibleItemCount = mLayoutManager.getChildCount();
-                int totalItemCount = mLayoutManager.getItemCount();
-//                int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
-//                Toast.makeText(getApplicationContext(),visibleItemCount+"->"+totalItemCount,Toast.LENGTH_SHORT).show();
+
+                lastItem = manager.findLastVisibleItemPosition();
+
+                //Check if data needs to be loaded
+                if(loadingFlag && dataImages.size() - lastItem < 5){
+                    loadingFlag=false;
+                    currentPage++;
+                    GetData();
+                }
             }
         });
     }
 
-    public void GetData(int page){
+    public void GetData(){
         //Creating the Api client using Api Interface
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+        Toast.makeText(getApplicationContext(),"currentPage"+currentPage,Toast.LENGTH_SHORT).show();
 
         try{
             //Calling the method in Api Interface to pass the query parameters
-            Call<PhotoResponse> call = apiService.fetchPhotos("popular",
-                    "Nude,People",
-                    Constants.IMAGE_SIZE_1600,
-                    page,
-                    getString(R.string.CONSUMER_KEY));
+            Call<PhotoResponse> call = apiService
+                    .fetchPhotos("popular",
+                                "Nude,People",
+                                Constants.IMAGE_SIZE_1600,
+                                currentPage,
+                                getString(R.string.CONSUMER_KEY));
             call.enqueue(new Callback<PhotoResponse>() {
                 @Override
                 public void onResponse(Call<PhotoResponse> call, Response<PhotoResponse> response) {
-                    PhotoResponse resp = response.body();
-                    List<Photos> photos = resp.getPhotos();
-                    for(int j = 0; j < photos.size(); j++){
-                        for(int i = 0;i < photos.get(j).getImages().size(); i++){
-                            //Getting the images at specified position
-                            image = photos.get(j).getImages().get(i);
 
-                            //Adding the images to the list
+                    //Setting the visibilities of elements
+                    progressBar.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+
+                    photoResponse = response.body();
+                    photosList.addAll(photoResponse.getPhotos());
+
+                    for(j=0; j < photosList.size(); j++){
+                        for(i=0;i < photosList.get(j).getImages().size(); i++){
+
+                            //Getting the images at specified position
+                            image = photosList.get(j).getImages().get(i);
+                            image.setName(photosList.get(j).getName());
                             dataImages.add(image);
 
                             //Notifying the data set change to the adapter
                             adapter.notifyDataSetChanged();
-
-                            //Setting the visibilities of elements
-                            progressBar.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-
-
+                            loadingFlag=true;
                         }
                     }
+                    photosList.clear();
                 }
 
                 @Override

@@ -5,13 +5,16 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Created by anjali desai on 12-01-2018.
+ * Created by anjali desai on 15-01-2018.
  */
 
 public class Photos {
 
     @SerializedName("id")
     private int photoId;
+
+    @SerializedName("name")
+    private String name;
 
     @SerializedName("images")
     private List<Images> images;
@@ -25,6 +28,8 @@ public class Photos {
         return images;
     }
 
+    public String getName(){return name;}
+
     //Setters
     public void setPhotoId(int photoId) {
         this.photoId = photoId;
@@ -33,4 +38,6 @@ public class Photos {
     public void setImages(List<Images> images) {
         this.images = images;
     }
+
+    public void setName(String name){this.name = name;}
 }

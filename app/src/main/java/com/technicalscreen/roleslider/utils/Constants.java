@@ -16,5 +16,5 @@ public final class Constants {
     public static final String IMAGE_SIZE_1600 = "1600";
     public static final String PAGE = "page";
 
-    public static final int OFF_SCREEN_PAGE_LIMIT = 4;
+    public static final int OFF_SCREEN_PAGE_LIMIT = 100;
 }

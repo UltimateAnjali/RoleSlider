@@ -10,9 +10,9 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/recycler_view"
         android:clipToPadding="false"
         android:scrollbars="vertical"
-        android:id="@+id/recycler_view"
         android:visibility="gone"/>
 
     <ProgressBar
