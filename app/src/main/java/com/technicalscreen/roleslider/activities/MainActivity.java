@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int PAGE_START = 0;
     private boolean loadingFlag = false;
 //    private boolean permanentFlag = true;
-    private int TOTAL_PAGES = Constants.OFF_SCREEN_PAGE_LIMIT;
     private int currentPage = 0;
     int lastItem;
 
